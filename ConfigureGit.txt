@@ -1,0 +1,24 @@
+Windows Users ?
+We recommend Git for Windows.
+Use this one if you use cmd, or the one below if you use Git Bash.
+
+git config --global http.cookiefile "%USERPROFILE%\.gitcookies"
+powershell -noprofile -nologo -command Write-Output "source.developers.google.com`tFALSE`t/`tTRUE`t2147483647`to`tgit-tindoantrong.gmail.com=1//0gt84BGHWLn8RCgYIARAAGBASNwF-L9IrtMEh7mz-EwUfI_XPStwD039euOFbXA49MtScqiYXHFo1tLhwlTANhZjeDRRvVcHzXVo" >>"%USERPROFILE%\.gitcookies"
+
+==================================================
+Authenticate as tindoantrong@gmail.com to source.developers.google.com
+
+eval 'set +o history' 2>/dev/null || setopt HIST_IGNORE_SPACE 2>/dev/null
+ touch ~/.gitcookies
+ chmod 0600 ~/.gitcookies
+
+ git config --global http.cookiefile ~/.gitcookies
+
+ tr , \\t <<\__END__ >>~/.gitcookies
+source.developers.google.com,FALSE,/,TRUE,2147483647,o,git-tindoantrong.gmail.com=1//0gt84BGHWLn8RCgYIARAAGBASNwF-L9IrtMEh7mz-EwUfI_XPStwD039euOFbXA49MtScqiYXHFo1tLhwlTANhZjeDRRvVcHzXVo
+__END__
+eval 'set -o history' 2>/dev/null || unsetopt HIST_IGNORE_SPACE 2>/dev/null
+
+=====================================================
+
+git clone https://source.developers.google.com/p/vision-ai-project-288205/r/aka
