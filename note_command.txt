@@ -23,6 +23,7 @@ https://codelabs.developers.google.com/codelabs/cloud-windows-containers-compute
 Windows Server 2019 Datacenter for Containers image
 gcloud builds submit --tag gcr.io/vision-ai-project-288205/aka-tool:latest .
 
+--- run as admin power shell
 docker build -t gcr.io/vision-ai-project-288205/iis-site-windows:latest .
 
 docker run -d -p 80:80 gcr.io/vision-ai-project-288205/iis-site-windows:latest
@@ -34,7 +35,7 @@ gcloud auth configure-docker
 docker push gcr.io/vision-ai-project-288205/iis-site-windows:latest
 ------------------------------------
 gcloud container clusters resize aka-tool-cluster --node-pool aka-tool-node \
-  --num-nodes 0\
+  --num-nodes 1\
   --zone us-central1-a	
 	
 	
@@ -54,6 +55,7 @@ gcloud container node-pools resize aka-tool-node \
     --num-nodes 1 \
 	--zone us-central1-a
 
+--Bắt đầu:
 	
 gcloud container clusters create aka-tool-cluster \
     --enable-ip-alias \
@@ -78,10 +80,28 @@ kubectl get mutatingwebhookconfigurations
 
 kubectl get nodes
 
+-----------build docker ở máy local, hoặc server tạm---------
+docker build -t gcr.io/vision-ai-project-288205/iis-site-windows:1.0.16 .
+
+---> Chạy trên server ảo: docker run -d -p 80:80 gcr.io/vision-ai-project-288205/iis-site-windows:latest
+
+-> File auth: koi-owner2020@vision-ai-project-288205.iam.gserviceaccount.com
+
+gcloud auth activate-service-account koi-owner2020@vision-ai-project-288205.iam.gserviceaccount.com --key-file=google_model_training_live_site.json
+gcloud auth configure-docker
+docker push gcr.io/vision-ai-project-288205/iis-site-windows:1.0.16
+
+
+kubectl rollout restart deployment iis-site-windows
+kubectl scale deployment iis-site-windows --replicas=1
+
 deployment.yaml
 kubectl apply -f deployment.yaml
-
+--Kiển tra tình trạng pod: kubectl describe pods
 kubectl get pods
+
+kubectl exec --stdin --tty iis-site-windows-74749fc97d-8qhsf -- cmd
+
 --
 kubectl expose deployment iis-site-windows --type="LoadBalancer"
 
@@ -89,4 +109,33 @@ kubectl get service
 
 
 to scale
-kubectl scale deployment iis-site-windows --replicas=2
+kubectl scale deployment iis-site-windows --replicas=1
+
+gcloud container clusters resize aka-tool-cluster --node-pool aka-tool-node \
+  --num-nodes 1\
+  --zone us-central1-a	
+
+kubectl get nodes
+kubectl describe node gke-aka-tool-cluster-aka-tool-node-a0579609-l7wl
+
+kubectl get pods
+kubectl exec --stdin --tty iis-site-windows-985bd8c94-nwzqb -- cmd
+
+
+---------------------
+xử lý khi node pod bị lỗi
+
+xóa node pool
+gcloud container node-pools delete aka-tool-node \
+    --cluster=aka-tool-cluster \
+	--zone us-central1-a	
+	
+Tạo lại
+gcloud container node-pools create aka-tool-node \
+    --cluster=aka-tool-cluster \
+    --image-type=WINDOWS_LTSC \
+    --no-enable-autoupgrade \
+    --machine-type=n1-standard-2 \
+    --num-nodes=1 \
+	--enable-autoscaling --min-nodes 1 --max-nodes 4 \
+	--zone us-central1-a
